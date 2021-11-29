@@ -1,5 +1,5 @@
 import { Quiz } from "./quiz";
-import { Statistics } from "./Statistics";
+import { Statistics } from "./statistics";
 
 export class User {
     public registered: Boolean;
