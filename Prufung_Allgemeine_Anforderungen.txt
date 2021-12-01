@@ -16,7 +16,7 @@ Abgabe Möglichkeiten:
   2.1. Der Quellcode der Software muss objektorientiert entwickelt sein.
   2.2. Die Software soll als Konsolenprogramm umgesetzt sein, ersatzweise als Browser Applikation.
   2.3. Innerhalb des Quellcodes und Klassendiagramms müssen mindestens zwei Design Patterns eingearbeitet sein, gerne auch mehr.
-  2.4. Innerhalb des Quellcodes soll es mindestens eine Umsetzung einer Regular Expression geben. 
+  2.4. Innerhalb des Quellcodes soll es mindestens eine Umsetzung einer Regular Expression geben. # Anmelden Registierung
     Note: Am besten hierfür sind Eingaben von Zahlen, Nummern, Postleitzahlen, Namen, Texte, etc. geeignet.
 3. Datenhaltung:
   3.1. Die Daten müssen in Dateien im JSON oder XML Format gespeichert werden. Für die Objektstrukturen werden keine Vorgaben gemacht.
