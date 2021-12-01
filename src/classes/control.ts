@@ -11,10 +11,10 @@ export class Control {
         let database: Database = new Database();
         await database.connectRegistered();
         let user: User | null = new User(true, "user1", "1234");
-        // await database.register(user);
+        await database.register(user);
         user = await database.login(user.username, user.password);
         if (user)
-            console.log(user._id);
+            console.log(user._id?.toString());
         await database.disconnect();
     }
     public selectQuiz(name: String): Quiz {

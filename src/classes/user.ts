@@ -1,23 +1,25 @@
 import { Quiz } from "./quiz";
 import { Statistics } from "./statistics";
+import { ObjectId } from "mongodb";
 
 export class User {
-    public _id?: string;
+    public _id?: ObjectId;
     public registered: Boolean;
     public username: String;
-    public password: String;
+    public password?: String;
     public statisticId?: String;
     public playableQuizIds?: String[];
     public playableQuizNames?: String[];
     public statistics?: Statistics;
     public playableQuiz?: Quiz[];
 
-    constructor(registered: Boolean, username: String, password: String, _id?: string, statisticId?: String, playableQuizIds?: String[], playableQuizNames?: String[], statistics?: Statistics, playableQuiz?: Quiz[]) {
+    constructor(registered: Boolean, username: String, password?: String, _id?: ObjectId, statisticId?: String, playableQuizIds?: String[], playableQuizNames?: String[], statistics?: Statistics, playableQuiz?: Quiz[]) {
         if (_id)
             this._id = _id;
         this.registered = registered;
         this.username = username;
-        this.password = password;
+        if (password)
+            this.password = password;
         if (statisticId)
             this.statisticId = statisticId;
         if (playableQuizIds)

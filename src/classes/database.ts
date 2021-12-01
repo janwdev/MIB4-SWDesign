@@ -1,4 +1,3 @@
-// const { MongoClient } = require("mongodb");
 import * as Mongo from "mongodb";
 import * as bcrypt from "bcrypt";
 import { dbRegisteredUserName, dbRegisteredUserPW, dbUnregisteredUserName, dbUnregisteredUserPW } from "../secrets";
@@ -49,6 +48,7 @@ export class Database {
         }
         return null;
     }
+
     public async register(userOld: User): Promise<User | null> {
         let dbUser: User | null = await this.findUserByUsername(userOld.username);
         if (!dbUser) {
@@ -68,24 +68,78 @@ export class Database {
         }
     }
 
+    public async addQuestionToDB(question: Question): Promise<void> {
+        if (this.dbQuestions != undefined) {
+            await this.dbQuestions.insertOne(question);
+        } else {
+            console.log("DBConnection not successfull");
+        }
+    }
+
+    public async addQuestionsToDB(questions: Question[]): Promise<void> {
+        if (this.dbQuestions != undefined) {
+            await this.dbQuestions.insertMany(questions);
+        } else {
+            console.log("DBConnection not successfull");
+        }
+    }
+
+    public async addQuizToDB(quiz: Quiz): Promise<void> {
+        if (this.dbQuiz != undefined) {
+            await this.dbQuiz.insertOne(quiz);
+        } else {
+            console.log("DBConnection not successfull");
+        }
+    }
+
+    public async getQuiz(id: Mongo.ObjectId): Promise<Quiz | null> {
+        let quiz: Quiz = await this.dbQuiz.findOne({ _id: id });
+        if (quiz) {
+            return quiz;
+        } else {
+            console.log("Cant find quiz with id: " + id);
+            return null;
+        }
+    }
+
+    public async getAllQuiz(): Promise<Quiz[] | null> {
+        let allQuiz: Quiz[] = await this.dbQuiz.find().toArray();
+        if (allQuiz)
+            return allQuiz;
+        else
+            return null;
+    }
+
+    public async getQuestion(id: Mongo.ObjectId): Promise<Question | null> {
+        let question: Question = await this.dbQuestions.findOne({ _id: id });
+        if (question) {
+            return question;
+        } else {
+            console.log("Cant find question with id: " + id);
+            return null;
+        }
+    }
+
+    public async getQuestions(ids: Mongo.ObjectId[]): Promise<Question[] | null> {
+        let questions: Question[] = [];
+        for (let index: number = 0; index < ids.length; index++) {
+            let question: Question = await this.dbQuestions.findOne({ _id: ids[index] });
+            questions.push(question);
+        }
+        if (questions.length > 0) {
+            return questions;
+        } else {
+            console.log("Cant find questions");
+            return null;
+        }
+    }
+
     private async findUserByUsername(username: String): Promise<User | null> {
         let user: User = await this.dbUsers.findOne({ username: username });
         if (user) {
             return user;
         } else
             return null;
-    }
-
-    public async addQuestionToDB(question: Question): Promise<boolean> {
-    }
-
-    public async addQuizToDB(quiz: Quiz): Promise<boolean> {
-    }
-
-    public async getQuiz(id: string): Promise<Quiz> {
-    }
-
-    public async getQuestion(id: string): Promise<Question> {
     }
 
     private async connect(user: string, pw: string): Promise<boolean> {
