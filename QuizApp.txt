@@ -1,0 +1,54 @@
+Mit der Rolle des Benutzers und registrtierten Benutzers sind sowohl männliche als auch weibliche Personen gemeint.
+
+Aufgabe Quiz App:
+
+Für den täglichen Zeitvertreib soll es eine Quiz Applikation geben.
+
+In der Applikation gibt es zwei Rollen, den Benutzer und den Registrierten Benutzer.
+Bei Starten der Applikation gibt es drei Möglichkeiten:
+
+- Der aktuelle Benutzer, kann ein vorhandenes Quiz auswählen und dieses spielen.
+- Der aktuelle Benutzer, kann sich Anmelden mit Benutzername und Passwort.
+- Der aktuelle Benutzer, kann sich Registrierten wenn er noch nicht registriert ist.
+
+Bei der Registrierung ist es erforderlich einen Benutzernamen (alphanumerisch, keine Sonderzeichen) und ein Passwort anzugeben.
+Registrierte Benutzer werden dann in einer entsprechenden Datei gespeichert.
+Ein bereits registrtierten Benutzer kann sich nicht nochmals Registrieren.
+
+Mit dem Benutzernamen und Passwort kann sich ein registrierter Benutzer anmelden.
+Die Anmeldedaten sollen der Einfachheit halber gegen die Daten in der Datei geprüft werden.
+Entsprechende Sicherheitsvorkehrungen, dass das Passwort nicht sichtbar ist, usw... sind nicht erforderlich.
+
+Sobald der Registrierte Benutzer angemeldet ist, kann dieser ein Quiz erstellen oder kann eins seiner eigenen Quiz oder ein öffentliches Quiz spielen.
+Darüber hinaus hat er ebenso die Möglichkeit sich seine Statistik anzusehen.
+Ein Quiz besteht mindestens aus 3 Fragen und höchstens 10 Fragen.
+Ein Quiz hat einen Titel.
+
+Ein Frage hat immer einen bestimmten Fragetyp (Auswahlmöglichkeit, Eindeutige Zahl, Eindeutiger Text), Beispiele:
+
+- Auswahlmöglichkeit:
+Wie hoch ist der Eifelturm?
+1. 1 Meter
+2. 20 Meter
+3. 300 Meter
+4. 768 Meter
+
+- Eindeutige Zahl:
+Wann wurde Deutschland das letzte Fußballweltmeister?
+Antwort: 2014
+
+- Eindeutiger Text:
+Wie heißt der berühmte gelbe Bär mit rotem T-Shirt, der gerne Honig ist:
+Antwort: Winnie Pooh
+
+Bei einer Auswahlmöglichkeiten Frage kann die Frage mindestens 2 bis höchstens 4 Antwortmöglichkeiten haben.
+Der registrierte Benutzer hat nach jeder erstellten Frage, die Möglichkeit das Quiz fertigzustellen, insofern die Mindestanzahl an Fragen erstellt sind.
+Bei Fertigstellung muss der registrierte Benutzer noch entscheiden, ob das Quiz öffentlich für alle Benutzer ist oder nur für diesen selbst.
+Die Anzahl der Fragen wird am Quiz ebenfalls gespeichert.
+
+Am registrierten Benutzer wird gespeichert, wie viele Quiz er bereits gespielt hat, wie viele Fragen er beantwortet hat und wie viele Fragen er korrekt beantwortet hat.
+In der Statistik sind diese Kennzahlen dann ersichtlich und ebenso prozentual gewichtet.
+Diese Statistik wird dauerhaft gespeichert.
+
+Ein Benutzer kann lediglich öffentliche Quiz spielen und seine Statistik seit Start der Applikation ansehen.
+Die Statistik des Benutzers wird nach Beenden der Applikation verworfen.

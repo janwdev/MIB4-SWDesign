@@ -70,15 +70,9 @@ export class Database {
 
     public async addQuestionToDB(question: Question): Promise<void> {
         if (this.dbQuestions != undefined) {
-            await this.dbQuestions.insertOne(question);
-        } else {
-            console.log("DBConnection not successfull");
-        }
-    }
-
-    public async addQuestionsToDB(questions: Question[]): Promise<void> {
-        if (this.dbQuestions != undefined) {
-            await this.dbQuestions.insertMany(questions);
+            let result: Mongo.InsertOneResult<Mongo.Document> = await this.dbQuestions.insertOne(question);
+            let _id: string = result.insertedId.toString();
+            question.setId(_id);
         } else {
             console.log("DBConnection not successfull");
         }
