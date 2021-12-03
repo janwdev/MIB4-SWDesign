@@ -7,10 +7,10 @@ import { UniqueNumber } from "./uniqueNumber";
 import { UniqueText } from "./uniqueText";
 
 export class Quiz {
-    private questionsArray: String[];
-    private author: String;
+    private questionsArray: string[];
+    private author: string;
     private publicQuiz: Boolean;
-    private quizTitle: String;
+    private quizTitle: string;
 
     constructor() {
         this.questionsArray = [];
@@ -128,13 +128,14 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        let result: Array<any> = await this.getOptionsAnswers(response.amountOfOptions);
-        const correctNumber = result.pop();
-        const options: Array<String> = result;
+        let result:string[] = await this.getOptionsAnswers(response.amountOfOptions)
+        const optionsNumber = result.pop()
+        const correctNumber = (typeof optionsNumber == "string") ? parseInt(optionsNumber) : 1
+        const options: string[] = result
         await this.createQuestion(Question.QuestionOptionsType, response.question, correctNumber, options, "");
     }
 
-    private async getOptionsAnswers(amount: Number): Promise<Array<any>> {
+    private async getOptionsAnswers(amount: Number): Promise<string[]> {
         let questions: Array<object> = [];
         let choices: Array<object> = [];
         for (let i: number = 0; i < amount; ++i) {
@@ -145,7 +146,7 @@ export class Quiz {
             });
             choices.push({
                 title: (i + 1).toString(),
-                value: i
+                value: i.toString()
             });
         }
         questions.push({
@@ -156,12 +157,7 @@ export class Quiz {
         });
         const response = await prompts(questions);
 
-        let result: Array<any> = [];
-        for (let i = 0; i < amount; ++i) {
-            result.push(response.i);
-        }
-        result.push(response.correctAnswer);
-        return result;
+        return Object.values(response)
     }
 
     private async uniqueTextQuestionPrequesites(): Promise<void> {
@@ -182,7 +178,7 @@ export class Quiz {
     }
 
 
-    private async createQuestion(questionType: number, questionString: String, correctNumber: number, options: String[], correctText: String): Promise<void> {
+    private async createQuestion(questionType: number, questionString: string, correctNumber: number, options: string[], correctText: string): Promise<void> {
         let question!: Question;
         if (questionType == Question.UniqueNumberType) {
             question = new UniqueNumber(questionString, correctNumber);
@@ -192,6 +188,7 @@ export class Quiz {
             question = new UniqueText(questionString, correctText);
         }
         await database.addQuestionToDB(question);
+        //question.setId("1a2b3a4a5a6a7a8a")
         this.questionsArray.push(question._id.toString());
     }
 }
