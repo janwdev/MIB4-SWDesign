@@ -21,7 +21,15 @@ export class Quiz {
 
     public async createQuiz(): Promise<void> {
         await this.getBasicInfo();
-        await this.questionLoop();
+        if(this.quizTitle == undefined) {
+            console.log("Stopped Quiz creation");
+            return;
+        }
+        const quizSuccesful:boolean = await this.questionLoop();
+        if(!quizSuccesful) {
+            console.log("Stopped Quiz creation");
+            return;
+        }
         await database.addQuizToDB(this);
         console.log({
             "isPublic": this.publicQuiz,
@@ -51,22 +59,36 @@ export class Quiz {
         }
     }
 
-    private async questionLoop(): Promise<void> {
+    private async questionLoop(): Promise<boolean> {
         let questionsCreated: number = 0;
 
         while (questionsCreated < 10) {
             if (questionsCreated > 2) {
                 const repeatResult: boolean = await this.askUserToAddQuestion();
                 if (!repeatResult) {
-                    break;
+                    return true;
                 }
             }
             const selectedType: number = await this.getQuestionType();
-            if (selectedType == 0) await this.uniqueNumberQuestionPrequesites();
-            else if (selectedType == 1) await this.optionsQuestionPrequesites();
-            else await this.uniqueTextQuestionPrequesites();
+            if(selectedType == undefined) {
+                return false
+            }
+            if (selectedType == 0){
+                const uniqueNumberCorrect: boolean = await this.uniqueNumberQuestionPrequesites();
+                if(!uniqueNumberCorrect) return false
+            }
+            else if (selectedType == 1){
+                const optionsCorrect: boolean = await this.optionsQuestionPrequesites();
+                if(!optionsCorrect) return false
+            }
+            else {
+                const uniqueTextCorrect: boolean = await this.uniqueTextQuestionPrequesites();
+                if(!uniqueTextCorrect) return false
+            }
             ++questionsCreated;
         }
+        console.log("Maximum of 10 questions reached");
+        return true;
     }
 
     private async askUserToAddQuestion(): Promise<boolean> {
@@ -92,7 +114,7 @@ export class Quiz {
         return response.questionTypes;
     }
 
-    private async uniqueNumberQuestionPrequesites(): Promise<void> {
+    private async uniqueNumberQuestionPrequesites(): Promise<boolean> {
         const questions = [
             {
                 type: "text",
@@ -106,10 +128,15 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        await this.createQuestion(Question.UniqueNumberType, response.question, response.correctNumber, [], "");
+        if(Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
+            await this.createQuestion(Question.UniqueNumberType, response.question, response.correctNumber, [], "");
+            return true
+        } else {
+            return false
+        }
     }
 
-    private async optionsQuestionPrequesites(): Promise<void> {
+    private async optionsQuestionPrequesites(): Promise<boolean> {
         const questions = [
             {
                 type: "text",
@@ -128,11 +155,16 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        let result:string[] = await this.getOptionsAnswers(response.amountOfOptions)
-        const optionsNumber = result.pop()
-        const correctNumber = (typeof optionsNumber == "string") ? parseInt(optionsNumber) : 1
-        const options: string[] = result
-        await this.createQuestion(Question.QuestionOptionsType, response.question, correctNumber, options, "");
+        if(Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
+            let result:string[] = await this.getOptionsAnswers(response.amountOfOptions)
+            if(result.length == response.amountOfOptions+1 && !Object.values(response).includes(undefined)) {
+                const optionsNumber = result.pop();
+                const correctNumber = (typeof optionsNumber == "string") ? parseInt(optionsNumber) : 1;
+                const options: string[] = result;
+                await this.createQuestion(Question.QuestionOptionsType, response.question, correctNumber, options, "");
+                return true;
+            } else return false;
+        } else return false;        
     }
 
     private async getOptionsAnswers(amount: Number): Promise<string[]> {
@@ -160,7 +192,7 @@ export class Quiz {
         return Object.values(response)
     }
 
-    private async uniqueTextQuestionPrequesites(): Promise<void> {
+    private async uniqueTextQuestionPrequesites(): Promise<boolean> {
         const questions = [
             {
                 type: "text",
@@ -174,7 +206,12 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        await this.createQuestion(Question.UniqueTextType, response.question, 0, [], response.correctAnswer);
+        if(Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
+            await this.createQuestion(Question.UniqueTextType, response.question, 0, [], response.correctAnswer);
+            return true
+        } else {
+            return false
+        }
     }
 
 
@@ -188,7 +225,6 @@ export class Quiz {
             question = new UniqueText(questionString, correctText);
         }
         await database.addQuestionToDB(question);
-        //question.setId("1a2b3a4a5a6a7a8a")
         this.questionsArray.push(question._id.toString());
     }
 }
