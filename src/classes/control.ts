@@ -1,7 +1,6 @@
 import { Database } from "./database";
 import { Quiz } from "./quiz";
 import { User } from "./user";
-import * as Mongo from "mongodb";
 const prompts = require("prompts");
 
 export let database: Database = new Database();
