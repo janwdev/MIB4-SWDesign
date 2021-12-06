@@ -87,7 +87,7 @@ export class Database {
     }
 
     public async getQuiz(id: Mongo.ObjectId): Promise<Quiz | null> {
-        let quiz: Quiz = await this.dbQuiz.findOne({ _id: id });
+        let quiz: Quiz = <Quiz> <unknown> await this.dbQuiz.findOne({ _id: id });
         if (quiz) {
             return quiz;
         } else {
@@ -97,7 +97,7 @@ export class Database {
     }
 
     public async getAllQuiz(): Promise<Quiz[] | null> {
-        let allQuiz: Quiz[] = await this.dbQuiz.find().toArray();
+        let allQuiz: Quiz[] = <Quiz[]> <unknown> await this.dbQuiz.find().toArray();
         if (allQuiz)
             return allQuiz;
         else
@@ -105,7 +105,7 @@ export class Database {
     }
 
     public async getQuestion(id: Mongo.ObjectId): Promise<Question | null> {
-        let question: Question = await this.dbQuestions.findOne({ _id: new Mongo.ObjectId(id) });
+        let question: Question = <Question> await this.dbQuestions.findOne({ _id: id });
         if (question) {
             return question;
         } else {
@@ -117,7 +117,7 @@ export class Database {
     public async getQuestions(ids: Mongo.ObjectId[]): Promise<Question[] | null> {
         let questions: Question[] = [];
         for (let index: number = 0; index < ids.length; index++) {
-            let question: Question = await this.dbQuestions.findOne({ _id: ids[index] });
+            let question: Question = <Question> await this.dbQuestions.findOne({ _id: ids[index] });
             questions.push(question);
         }
         if (questions.length > 0) {
@@ -129,7 +129,7 @@ export class Database {
     }
 
     private async findUserByUsername(username: String): Promise<User | null> {
-        let user: User = await this.dbUsers.findOne({ username: username });
+        let user: User = <User> await this.dbUsers.findOne({ username: username });
         if (user) {
             return user;
         } else

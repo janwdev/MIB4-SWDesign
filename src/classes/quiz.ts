@@ -1,6 +1,5 @@
 const prompts = require("prompts");
 
-import { MongoAPIError } from "mongodb";
 import { database } from "./control";
 import { Question } from "./question";
 import { QuestionOptions } from "./questionOptions";
@@ -9,27 +8,24 @@ import { UniqueText } from "./uniqueText";
 import * as Mongo from "mongodb";
 
 export class Quiz {
-    private questionsArray: string[];
-    private author: string;
-    private publicQuiz: Boolean;
-    public quizTitle: string;
-    public _id: Mongo.ObjectId;
+    public quizTitle!: string;
+    public _id!: Mongo.ObjectId;
+    private questionsArray!: string[];
+    private author!: string;
+    private publicQuiz!: Boolean;
 
-    constructor() {
+    public async createQuiz(): Promise<void> {
         this.questionsArray = [];
         this.author = "Max"; //TODO change to username
         this.publicQuiz = false;
         this.quizTitle = "";
-    }
-
-    public async createQuiz(): Promise<void> {
         await this.getBasicInfo();
-        if(this.quizTitle == undefined) {
+        if (this.quizTitle == undefined) {
             console.log("Stopped Quiz creation");
             return;
         }
-        const quizSuccesful:boolean = await this.questionLoop();
-        if(!quizSuccesful) {
+        const quizSuccesful: boolean = await this.questionLoop();
+        if (!quizSuccesful) {
             console.log("Stopped Quiz creation");
             return;
         }
@@ -43,69 +39,74 @@ export class Quiz {
     }
     public async playQuiz(quiz: Quiz): Promise<void> {
         // let quiz = Database.getQuiz("61a8b0d98cc9a7deecf11616");
-        console.log("Playing quiz " + quiz.quizTitle);
-        let correctAnswers = 0;
-        let amountOfQuestions = quiz.questionsArray.length;
-        for (let index = 0; index < amountOfQuestions; index++) {
-            let question: Question = await database.getQuestion(quiz.questionsArray[index]);
+        this.questionsArray = quiz.questionsArray;
+        this.author = quiz.author;
+        this.publicQuiz = quiz.publicQuiz;
+        this.quizTitle = quiz.quizTitle;
+
+        console.log("Playing quiz " + this.quizTitle);
+        let correctAnswers: number = 0;
+        let amountOfQuestions: number = this.questionsArray.length;
+        for (let index: number = 0; index < amountOfQuestions; index++) {
+            let question: Question = await database.getQuestion(new Mongo.ObjectId(this.questionsArray[index]));
             // console.log(question);
             let prompt;
             let correctAnswer;
             let message;
             switch (question.type) {
                 case Question.UniqueNumberType:
-                    question = <UniqueNumber> question;
+                    question = <UniqueNumber>question;
                     message = question.question;
                     correctAnswer = question.correctNumber;
                     break;
                 case Question.QuestionOptionsType:
-                    question = <QuestionOptions> question;
+                    question = <QuestionOptions>question;
                     message = question.question
                     for (let i = 1; i <= question.options.length; i++) {
-                        message += "\n" + i + ") " + question.options[i-1];
-                        
+                        message += "\n" + i + ") " + question.options[i - 1];
+
                     }
-                   
+
                     correctAnswer = question.correctAnswer;
                     break;
 
                 case Question.UniqueTextType:
-                    question = <UniqueText> question;
+                    question = <UniqueText>question;
                     message = question.question;
                     correctAnswer = question.rightAnswer;
                     break;
-            
+
                 default:
                     throw new Error("Error. Unknown question type");
-                    
+
                     break;
             }
 
             prompt = [
                 {
-                  type: "text",
-                  name: "answer",
-                  message: message
+                    type: "text",
+                    name: "answer",
+                    message: message
                 }
             ];
-          
+
             const response = await prompts(prompt);
-            
+
             if (String(response.answer) == String(correctAnswer)) {
                 console.log("Correct Answer");
                 correctAnswers++;
             }
             else {
                 console.log("Wrong Answer");
-                console.log("Correct answer: " +correctAnswer)
+                console.log("Correct answer: " + correctAnswer)
             }
-            console.log("Stats: " + correctAnswers +  " of " + amountOfQuestions + " Questions correctly answered")
+            console.log("Stats: " + correctAnswers + " of " + amountOfQuestions + " Questions correctly answered")
             // console.log("Input: " + response)
             // console.log("Answer: " + String(correctAnswer))
-           
+
         }
-       
-        
+
+
         //TODO Daten aus console.log abspeichern  
     }
     private async getBasicInfo(): Promise<void> {
@@ -139,20 +140,20 @@ export class Quiz {
                 }
             }
             const selectedType: number = await this.getQuestionType();
-            if(selectedType == undefined) {
+            if (selectedType == undefined) {
                 return false
             }
-            if (selectedType == 0){
+            if (selectedType == 0) {
                 const uniqueNumberCorrect: boolean = await this.uniqueNumberQuestionPrequesites();
-                if(!uniqueNumberCorrect) return false
+                if (!uniqueNumberCorrect) return false
             }
-            else if (selectedType == 1){
+            else if (selectedType == 1) {
                 const optionsCorrect: boolean = await this.optionsQuestionPrequesites();
-                if(!optionsCorrect) return false
+                if (!optionsCorrect) return false
             }
             else {
                 const uniqueTextCorrect: boolean = await this.uniqueTextQuestionPrequesites();
-                if(!uniqueTextCorrect) return false
+                if (!uniqueTextCorrect) return false
             }
             ++questionsCreated;
         }
@@ -197,7 +198,7 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        if(Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
+        if (Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
             await this.createQuestion(Question.UniqueNumberType, response.question, response.correctNumber, [], "");
             return true
         } else {
@@ -224,16 +225,16 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        if(Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
-            let result:string[] = await this.getOptionsAnswers(response.amountOfOptions)
-            if(result.length == response.amountOfOptions+1 && !Object.values(response).includes(undefined)) {
+        if (Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
+            let result: string[] = await this.getOptionsAnswers(response.amountOfOptions)
+            if (result.length == response.amountOfOptions + 1 && !Object.values(response).includes(undefined)) {
                 const optionsNumber = result.pop();
                 const correctNumber = (typeof optionsNumber == "string") ? parseInt(optionsNumber) : 1;
                 const options: string[] = result;
                 await this.createQuestion(Question.QuestionOptionsType, response.question, correctNumber, options, "");
                 return true;
             } else return false;
-        } else return false;        
+        } else return false;
     }
 
     private async getOptionsAnswers(amount: Number): Promise<string[]> {
@@ -275,7 +276,7 @@ export class Quiz {
             }
         ];
         const response = await prompts(questions);
-        if(Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
+        if (Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
             await this.createQuestion(Question.UniqueTextType, response.question, 0, [], response.correctAnswer);
             return true
         } else {
