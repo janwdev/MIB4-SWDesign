@@ -2,20 +2,28 @@ import { Database } from "./database";
 import { Quiz } from "./quiz";
 import { User } from "./user";
 import * as Mongo from "mongodb";
-export let database: Database = new Database();
-export let user: User;
 const prompts = require("prompts");
+
+export let database: Database = new Database();
+
+
 export class Control {
+    
+    public static user: User;
 
     public async main(): Promise<void> {
         console.log("I'm running!");
         await database.connectRegistered();
-        let user: User | null = new User(true, "user1", "1234");
-        await database.register(user);
-        user = await database.login(user.username, user.password);
-        if (user)
-            console.log(user._id?.toString());
-
+        Control.user = new User(true, "user1", "1234");
+        await database.register(Control.user);
+        let userDB: User | null = await database.login(Control.user.username, Control.user.password);
+        if (userDB) {
+            Control.user.setValuesFromUser(userDB);
+            console.log(Control.user._id?.toString());
+            console.log(Control.user.statistics);
+        } else {
+            console.log("Error, login went wrong");
+        }
 
         let prompt = [
             {

@@ -54,7 +54,7 @@ export class Database {
         if (!dbUser) {
             const saltRounds: number = 10;
             const hashedPassword: string = await bcrypt.hash(<string>userOld.password, saltRounds);
-            let user: User = new User(userOld.registered, userOld.username, hashedPassword, userOld._id, userOld.statisticId, userOld.playableQuizIds, userOld.playableQuizNames, userOld.statistics, userOld.playableQuiz);
+            let user: User = new User(userOld.registered, userOld.username, hashedPassword, userOld._id, userOld.playableQuizIds, userOld.playableQuizNames, userOld.statistics, userOld.playableQuiz);
             await this.addUserToDB(user);
             dbUser = await this.findUserByUsername(user.username);
             if (!dbUser) {
@@ -66,6 +66,15 @@ export class Database {
             console.log("username already exist");
             return null;
         }
+    }
+
+    public async saveStatistic(user: User): Promise<void> {
+        const updateDoc: Mongo.UpdateFilter<Mongo.Document> = {
+            $set: {
+                statistics: user.statistics
+            },
+        };
+        await this.dbUsers.updateOne({ _id: user._id }, updateDoc );
     }
 
     public async addQuestionToDB(question: Question): Promise<void> {
@@ -87,7 +96,7 @@ export class Database {
     }
 
     public async getQuiz(id: Mongo.ObjectId): Promise<Quiz | null> {
-        let quiz: Quiz = <Quiz> <unknown> await this.dbQuiz.findOne({ _id: id });
+        let quiz: Quiz = <Quiz><unknown>await this.dbQuiz.findOne({ _id: id });
         if (quiz) {
             return quiz;
         } else {
@@ -97,7 +106,7 @@ export class Database {
     }
 
     public async getAllQuiz(): Promise<Quiz[] | null> {
-        let allQuiz: Quiz[] = <Quiz[]> <unknown> await this.dbQuiz.find().toArray();
+        let allQuiz: Quiz[] = <Quiz[]><unknown>await this.dbQuiz.find().toArray();
         if (allQuiz)
             return allQuiz;
         else
@@ -105,11 +114,11 @@ export class Database {
     }
 
     public async getQuestion(id: Mongo.ObjectId): Promise<Question | null> {
-        let question: Question = <Question> await this.dbQuestions.findOne({ _id: id });
+        let question: Question = <Question>await this.dbQuestions.findOne({ _id: id });
         if (question) {
             return question;
         } else {
-            console.log("Cant find question with id: " + typeof(id) + id);
+            console.log("Cant find question with id: " + typeof (id) + id);
             return null;
         }
     }
@@ -117,7 +126,7 @@ export class Database {
     public async getQuestions(ids: Mongo.ObjectId[]): Promise<Question[] | null> {
         let questions: Question[] = [];
         for (let index: number = 0; index < ids.length; index++) {
-            let question: Question = <Question> await this.dbQuestions.findOne({ _id: ids[index] });
+            let question: Question = <Question>await this.dbQuestions.findOne({ _id: ids[index] });
             questions.push(question);
         }
         if (questions.length > 0) {
@@ -129,7 +138,7 @@ export class Database {
     }
 
     private async findUserByUsername(username: String): Promise<User | null> {
-        let user: User = <User> await this.dbUsers.findOne({ username: username });
+        let user: User = <User>await this.dbUsers.findOne({ username: username });
         if (user) {
             return user;
         } else

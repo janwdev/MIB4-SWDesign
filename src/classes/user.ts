@@ -6,29 +6,44 @@ export class User {
     public _id?: ObjectId;
     public registered: Boolean;
     public username: String;
+    public statistics: Statistics = new Statistics();
     public password?: String;
-    public statisticId?: String;
     public playableQuizIds?: String[];
-    public playableQuizNames?: String[];
-    public statistics?: Statistics;
     public playableQuiz?: Quiz[];
 
-    constructor(registered: Boolean, username: String, password?: String, _id?: ObjectId, statisticId?: String, playableQuizIds?: String[], playableQuizNames?: String[], statistics?: Statistics, playableQuiz?: Quiz[]) {
+    constructor(registered: Boolean, username: String, password?: String, _id?: ObjectId, playableQuizIds?: String[], statistics?: Statistics, playableQuiz?: Quiz[]) {
         if (_id)
             this._id = _id;
         this.registered = registered;
         this.username = username;
         if (password)
             this.password = password;
-        if (statisticId)
-            this.statisticId = statisticId;
         if (playableQuizIds)
             this.playableQuizIds = playableQuizIds;
-        if (playableQuizNames)
-            this.playableQuizNames = playableQuizNames;
         if (statistics)
-            this.statistics = statistics;
+            this.statistics.initSetValues(statistics.numOfQuizes, statistics.answersGiven, statistics.correctAnswers);
         if (playableQuiz)
             this.playableQuiz = playableQuiz;
+    }
+
+    public setValuesFromUser(userDB: User): void {
+        if (userDB._id)
+            this._id = userDB._id;
+        if (userDB.registered)
+            this.registered = userDB.registered;
+        if (userDB.username)
+            this.username = userDB.username;
+        if (userDB.statistics)
+            this.statistics.initSetValues(userDB.statistics.numOfQuizes, userDB.statistics.answersGiven, userDB.statistics.correctAnswers);
+        if (userDB.password)
+            this.password = userDB.password;
+        if (userDB.playableQuizIds)
+            this.playableQuizIds = userDB.playableQuizIds;
+        // TODO load playable Quiz Array
+    }
+
+    public showStatistic(): string {
+        return "You played " + this.statistics.numOfQuizes + " Quiz with " + this.statistics.answersGiven + " and " + this.statistics.correctAnswers + "correct answers." +
+            " This means you answered " + (this.statistics.correctAnswers / this.statistics.answersGiven * 100) + "% right";
     }
 }

@@ -1,6 +1,6 @@
 const prompts = require("prompts");
 
-import { database } from "./control";
+import { Control, database} from "./control";
 import { Question } from "./question";
 import { QuestionOptions } from "./questionOptions";
 import { UniqueNumber } from "./uniqueNumber";
@@ -105,7 +105,7 @@ export class Quiz {
             // console.log("Answer: " + String(correctAnswer))
 
         }
-
+        await Control.user.statistics.setValues(amountOfQuestions, correctAnswers);
 
         //TODO Daten aus console.log abspeichern  
     }
