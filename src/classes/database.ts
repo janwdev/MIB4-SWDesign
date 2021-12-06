@@ -105,11 +105,11 @@ export class Database {
     }
 
     public async getQuestion(id: Mongo.ObjectId): Promise<Question | null> {
-        let question: Question = await this.dbQuestions.findOne({ _id: id });
+        let question: Question = await this.dbQuestions.findOne({ _id: new Mongo.ObjectId(id) });
         if (question) {
             return question;
         } else {
-            console.log("Cant find question with id: " + id);
+            console.log("Cant find question with id: " + typeof(id) + id);
             return null;
         }
     }

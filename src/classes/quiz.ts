@@ -1,16 +1,19 @@
 const prompts = require("prompts");
 
+import { MongoAPIError } from "mongodb";
 import { database } from "./control";
 import { Question } from "./question";
 import { QuestionOptions } from "./questionOptions";
 import { UniqueNumber } from "./uniqueNumber";
 import { UniqueText } from "./uniqueText";
+import * as Mongo from "mongodb";
 
 export class Quiz {
     private questionsArray: string[];
     private author: string;
     private publicQuiz: Boolean;
-    private quizTitle: string;
+    public quizTitle: string;
+    public _id: Mongo.ObjectId;
 
     constructor() {
         this.questionsArray = [];
@@ -38,7 +41,73 @@ export class Quiz {
             "questions": this.questionsArray
         });
     }
+    public async playQuiz(quiz: Quiz): Promise<void> {
+        // let quiz = Database.getQuiz("61a8b0d98cc9a7deecf11616");
+        console.log("Playing quiz " + quiz.quizTitle);
+        let correctAnswers = 0;
+        let amountOfQuestions = quiz.questionsArray.length;
+        for (let index = 0; index < amountOfQuestions; index++) {
+            let question: Question = await database.getQuestion(quiz.questionsArray[index]);
+            // console.log(question);
+            let prompt;
+            let correctAnswer;
+            let message;
+            switch (question.type) {
+                case Question.UniqueNumberType:
+                    question = <UniqueNumber> question;
+                    message = question.question;
+                    correctAnswer = question.correctNumber;
+                    break;
+                case Question.QuestionOptionsType:
+                    question = <QuestionOptions> question;
+                    message = question.question
+                    for (let i = 1; i <= question.options.length; i++) {
+                        message += "\n" + i + ") " + question.options[i-1];
+                        
+                    }
+                   
+                    correctAnswer = question.correctAnswer;
+                    break;
 
+                case Question.UniqueTextType:
+                    question = <UniqueText> question;
+                    message = question.question;
+                    correctAnswer = question.rightAnswer;
+                    break;
+            
+                default:
+                    throw new Error("Error. Unknown question type");
+                    
+                    break;
+            }
+
+            prompt = [
+                {
+                  type: "text",
+                  name: "answer",
+                  message: message
+                }
+            ];
+          
+            const response = await prompts(prompt);
+            
+            if (String(response.answer) == String(correctAnswer)) {
+                console.log("Correct Answer");
+                correctAnswers++;
+            }
+            else {
+                console.log("Wrong Answer");
+                console.log("Correct answer: " +correctAnswer)
+            }
+            console.log("Stats: " + correctAnswers +  " of " + amountOfQuestions + " Questions correctly answered")
+            // console.log("Input: " + response)
+            // console.log("Answer: " + String(correctAnswer))
+           
+        }
+       
+        
+        //TODO Daten aus console.log abspeichern  
+    }
     private async getBasicInfo(): Promise<void> {
         const questions = [
             {
