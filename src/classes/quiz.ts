@@ -91,20 +91,24 @@ export class Quiz {
             ];
 
             const response = await prompts(prompt);
-
-            if (String(response.answer) == String(correctAnswer)) {
+            if (response.answer == undefined){
+                console.log("Abort");
+                return;
+            }
+            if (String(response.answer).toLowerCase() == String(correctAnswer).toLowerCase()) {
                 console.log("Correct Answer");
                 correctAnswers++;
             }
             else {
                 console.log("Wrong Answer");
-                console.log("Correct answer: " + correctAnswer)
+                console.log("Correct answer: " + correctAnswer);
             }
-            console.log("Stats: " + correctAnswers + " of " + amountOfQuestions + " Questions correctly answered")
+            console.log("Stats: " + correctAnswers + " of " + amountOfQuestions + " Questions correctly answered");
             // console.log("Input: " + response)
             // console.log("Answer: " + String(correctAnswer))
 
         }
+        console.log("----Quiz-end----");
         await Control.user.statistics.setValues(amountOfQuestions, correctAnswers);
 
         //TODO Daten aus console.log abspeichern  
