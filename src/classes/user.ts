@@ -43,7 +43,10 @@ export class User {
     }
 
     public showStatistic(): string {
-        return "You played " + this.statistics.numOfQuizes + " Quiz with " + this.statistics.answersGiven + " and " + this.statistics.correctAnswers + "correct answers." +
-            " This means you answered " + (this.statistics.correctAnswers / this.statistics.answersGiven * 100) + "% right";
+        let percent: number = Math.round(this.statistics.correctAnswers / this.statistics.answersGiven * 100);
+        if (Number.isNaN(percent) || percent == undefined)
+            percent = 0;
+        return "You played " + this.statistics.numOfQuizes + " Quiz with " + this.statistics.answersGiven + " answered Questions and " + this.statistics.correctAnswers + " correct answers." +
+            " This means you answered " + percent + "% right";
     }
 }

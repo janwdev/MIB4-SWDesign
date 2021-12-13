@@ -7,39 +7,38 @@ export let database: Database = new Database();
 
 
 export class Control {
-    
+
     public static user: User;
 
     public async main(): Promise<void> {
         console.log("I'm running!");
         await database.connectRegistered();
         Control.user = new User(true, "user1", "1234");
-        await database.register(Control.user);
-        let userDB: User | null = await database.login(Control.user.username, Control.user.password);
-        if (userDB) {
-            Control.user.setValuesFromUser(userDB);
-            console.log(Control.user._id?.toString());
-            console.log(Control.user.statistics);
-        } else {
-            console.log("Error, login went wrong");
-        }
+        // await database.register(Control.user);
+        // let userDB: User | null = await database.login(Control.user.username, Control.user.password);
+        // if (userDB) {
+        //     Control.user.setValuesFromUser(userDB);
+        //     console.log(Control.user._id?.toString());
+        //     console.log(Control.user.statistics);
+        // } else {
+        //     console.log("Error, login went wrong");
+        // }
 
-        while (true){
-            let prompt = [
-                {
-                    type: "text",
-                    name: "answer",
-                    message: "Was willst du machen?\n1)Quiz spielen\n2)Quiz erstellen"
-                }
-            ];
-    
-            const response1 = await prompts(prompt);
-            if (response1.answer == undefined){
-                    
-                break;
-            }
-            if (response1.answer == 1) {
-                prompt = [
+        while (true) {
+
+            const response = await prompts({
+                type: "select",
+                name: "answer",
+                message: "Was willst du machen",
+                choices: [
+                    { title: "Quiz spielen", value: 0 },
+                    { title: "Quiz erstellen", value: 1 },
+                    { title: "Statistik ansehen", value: 2 }
+                ],
+            });
+
+            if (response.answer == 0) {
+                const prompt = [
                     {
                         type: "text",
                         name: "answer",
@@ -53,8 +52,8 @@ export class Control {
                         console.log((index + 1) + ") " + quiz.quizTitle);
                     }
                     const response2 = await prompts(prompt);
-                    if (response2.answer == undefined){
-                    
+                    if (response2.answer == undefined) {
+
                         break;
                     }
                     let quiz: Quiz = all[response2.answer - 1];
@@ -64,11 +63,14 @@ export class Control {
                         await quizClass.playQuiz(selectedQuiz);
                     }
                 }
-    
+
             }
-            else {
+            else if (response.answer == 1) {
                 let quiz: Quiz = new Quiz();
                 await quiz.createQuiz();
+            }
+            else if (response.answer == 2) {
+                console.log(Control.user.showStatistic());
             }
         }
         console.log("Abort");
