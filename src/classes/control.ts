@@ -71,6 +71,8 @@ export class Control {
             }
             else if (response.answer == 2) {
                 console.log(Control.user.showStatistic());
+            } else {
+                break;
             }
         }
         console.log("Abort");

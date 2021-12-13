@@ -1,6 +1,6 @@
 const prompts = require("prompts");
 
-import { Control, database} from "./control";
+import { Control, database } from "./control";
 import { Question } from "./question";
 import { QuestionOptions } from "./questionOptions";
 import { UniqueNumber } from "./uniqueNumber";
@@ -17,10 +17,9 @@ export class Quiz {
     public async createQuiz(): Promise<void> {
         this.questionsArray = [];
         this.author = "Max"; //TODO change to username
-        this.publicQuiz = false;
         this.quizTitle = "";
         await this.getBasicInfo();
-        if (this.quizTitle == undefined) {
+        if (this.quizTitle == undefined || this.publicQuiz == undefined) {
             console.log("Stopped Quiz creation");
             return;
         }
@@ -91,7 +90,7 @@ export class Quiz {
             ];
 
             const response = await prompts(prompt);
-            if (response.answer == undefined){
+            if (response.answer == undefined) {
                 console.log("Abort");
                 return;
             }
@@ -128,8 +127,15 @@ export class Quiz {
         ];
         const response = await prompts(questions);
         this.quizTitle = response.title;
-        if (response.makePublic == "y") {
+        let isPublic: string = response.makePublic;
+        if (isPublic != undefined)
+            isPublic = isPublic.toLowerCase();
+        if (isPublic == "y") {
             this.publicQuiz = true;
+        } else if (isPublic == "n") {
+            this.publicQuiz = false;
+        } else {
+            console.log("isPublic was wrong set");
         }
     }
 
