@@ -14,15 +14,15 @@ export class Control {
         console.log("I'm running!");
         await database.connectRegistered();
         Control.user = new User(true, "user1", "1234");
-        // await database.register(Control.user);
-        // let userDB: User | null = await database.login(Control.user.username, Control.user.password);
-        // if (userDB) {
-        //     Control.user.setValuesFromUser(userDB);
-        //     console.log(Control.user._id?.toString());
-        //     console.log(Control.user.statistics);
-        // } else {
-        //     console.log("Error, login went wrong");
-        // }
+        await database.register(Control.user);
+        let userDB: User | null = await database.login(Control.user.username, Control.user.password);
+        if (userDB) {
+            Control.user.setValuesFromUser(userDB);
+            console.log(Control.user._id?.toString());
+            console.log(Control.user.statistics);
+        } else {
+            console.log("Error, login went wrong");
+        }
 
         while (true) {
 
