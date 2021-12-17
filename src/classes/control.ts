@@ -33,7 +33,8 @@ export class Control {
                 choices: [
                     { title: "Quiz spielen", value: 0 },
                     { title: "Quiz erstellen", value: 1 },
-                    { title: "Statistik ansehen", value: 2 }
+                    { title: "Statistik ansehen", value: 2 },
+                    { title: "Quiz App beenden", value: 3 }
                 ],
             });
 
@@ -52,16 +53,16 @@ export class Control {
                         console.log((index + 1) + ") " + quiz.quizTitle);
                     }
                     const response2 = await prompts(prompt);
-                    if (response2.answer == undefined) {
 
-                        break;
-                    }
-                    let quiz: Quiz = all[response2.answer - 1];
-                    let selectedQuiz: Quiz | null = await database.getQuiz(quiz._id);
-                    if (selectedQuiz) {
-                        let quizClass: Quiz = new Quiz();
-                        await quizClass.playQuiz(selectedQuiz);
-                    }
+                    const quizSelector: QuizSelector = await QuizSelectorFactory.checkQuiz(response2.answer);
+                    
+                    if(!quizSelector.isNil()) {
+                        let selectedQuiz: Quiz | null = await quizSelector.getQuiz()
+                        if (selectedQuiz) {
+                            let quizClass: Quiz = new Quiz();
+                            await quizClass.playQuiz(selectedQuiz);
+                        }
+                    } else console.log("This quiz does not exist")
                 }
 
             }
@@ -71,7 +72,12 @@ export class Control {
             }
             else if (response.answer == 2) {
                 console.log(Control.user.showStatistic());
-            } else {
+            } 
+            else if (response.answer == 3) {
+                console.log("Quiz wird beendet")
+                break;
+            } 
+            else {
                 break;
             }
         }
@@ -79,3 +85,54 @@ export class Control {
         await database.disconnect();
     }
 }
+
+
+abstract class QuizSelector {
+    protected quizNumber:string;
+    constructor() { this.quizNumber = "" }
+    public abstract isNil():boolean;
+    public abstract getQuiz(): Promise<Quiz>;
+}
+
+class RealQuiz extends QuizSelector {
+    constructor() {
+        super()
+        this.quizNumber = "-1"
+    }
+    setName(quizNumber:string) {
+       this.quizNumber = quizNumber;
+    }
+    public isNil():boolean {
+       return false;
+    }
+    public async getQuiz(): Promise<Quiz> {
+       let all: Quiz[] | null = await database.getAllQuiz();
+       return all!= null ? all[parseInt(this.quizNumber)-1] : new Quiz();
+    }
+ }
+
+class NullQuiz extends QuizSelector {
+    constructor() {
+        super()
+        this.quizNumber = "-1"
+    }
+    public isNil():boolean {
+        return true;
+    }
+    public async getQuiz(): Promise<Quiz> {
+        return new Quiz();
+    }
+}
+
+
+class QuizSelectorFactory {
+    public static async checkQuiz(quizNumber:string): Promise<QuizSelector>{
+        let all: Quiz[] | null = await database.getAllQuiz();
+        if(all != null && parseInt(quizNumber) < all.length && parseInt(quizNumber) >= 0) {
+            let success:RealQuiz = new RealQuiz();
+            success.setName(quizNumber)
+            return success
+        }
+        return new NullQuiz()
+    }
+ }

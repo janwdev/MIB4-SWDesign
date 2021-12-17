@@ -19,12 +19,17 @@ export class Quiz {
         this.author = "Max"; //TODO change to username
         this.quizTitle = "";
         await this.getBasicInfo();
-        if (this.quizTitle == undefined || this.publicQuiz == undefined) {
+        if (this.quizTitle == undefined) {
             console.log("Stopped Quiz creation");
             return;
         }
         const quizSuccesful: boolean = await this.questionLoop();
         if (!quizSuccesful) {
+            console.log("Stopped Quiz creation");
+            return;
+        }
+        const visibilitySet: boolean = await this.quizVisibility();
+        if(!visibilitySet) {
             console.log("Stopped Quiz creation");
             return;
         }
@@ -113,30 +118,32 @@ export class Quiz {
         //TODO Daten aus console.log abspeichern  
     }
     private async getBasicInfo(): Promise<void> {
-        const questions = [
+        const question = [
             {
                 type: "text",
                 name: "title",
                 message: "What is the title of your quiz?"
-            },
-            {
-                type: "text",
-                name: "makePublic",
-                message: "Make the quiz public? (y/n)"
             }
         ];
-        const response = await prompts(questions);
+        const response = await prompts(question);
         this.quizTitle = response.title;
-        let isPublic: string = response.makePublic;
-        if (isPublic != undefined)
-            isPublic = isPublic.toLowerCase();
-        if (isPublic == "y") {
-            this.publicQuiz = true;
-        } else if (isPublic == "n") {
-            this.publicQuiz = false;
-        } else {
-            console.log("isPublic was wrong set");
+    }
+
+    private async quizVisibility(): Promise<boolean> {
+        const response = await prompts({
+            type: "select",
+            name: "quizVisibility",
+            message: "Make quiz public?",
+            choices: [
+                { title: "Yes", value: true },
+                { title: "No", value: false }
+            ],
+        });
+        if(response.quizVisibility != undefined) {
+            this.publicQuiz = response.quizVisibility;
+            return true
         }
+        return false
     }
 
     private async questionLoop(): Promise<boolean> {
