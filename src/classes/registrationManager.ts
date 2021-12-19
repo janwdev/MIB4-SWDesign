@@ -10,6 +10,8 @@ export class RegistrationManager {
     public login(username: String, password: String): User {
     }
     private checkUsername(username: String): boolean {
+        //will accept alphanumeric usernames between 5 and 20 characters, no special characters.  
+        username.match(/^(?=.{5,20}$)[a-zA-Z0-9._]+(?<![_.])$/);
     }
     public registerAnonymousUser(): User {
     }
