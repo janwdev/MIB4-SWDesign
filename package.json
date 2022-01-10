@@ -21,9 +21,10 @@
   },
   "homepage": "https://github.com/janwdev/MIB4-SWDesign#readme",
   "dependencies": {
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^16.11.7",
     "bcrypt": "^5.0.1",
-    "mongodb": "^4.2.0",
+    "mongodb": "^4.3.0",
     "prompts": "^2.4.2",
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",

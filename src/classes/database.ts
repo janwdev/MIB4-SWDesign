@@ -54,7 +54,7 @@ export class Database {
         if (!dbUser) {
             const saltRounds: number = 10;
             const hashedPassword: string = await bcrypt.hash(<string>userOld.password, saltRounds);
-            let user: User = new User(userOld.registered, userOld.username, hashedPassword, userOld._id, userOld.playableQuizIds, userOld.playableQuizNames, userOld.statistics, userOld.playableQuiz);
+            let user: User = new User(userOld.registered, userOld.username, hashedPassword, userOld._id, userOld.playableQuizIds, userOld.statistics, userOld.playableQuiz);
             await this.addUserToDB(user);
             dbUser = await this.findUserByUsername(user.username);
             if (!dbUser) {
@@ -72,7 +72,7 @@ export class Database {
         const updateDoc: Mongo.UpdateFilter<Mongo.Document> = {
             $set: {
                 statistics: user.statistics
-            },
+            }
         };
         await this.dbUsers.updateOne({ _id: user._id }, updateDoc );
     }
@@ -147,7 +147,7 @@ export class Database {
 
     private async connect(user: string, pw: string): Promise<boolean> {
         const uri: string = "mongodb+srv://" + user + ":" + pw + "@swdesign.gu1ll.mongodb.net/" + this.dbName + "?retryWrites=true&w=majority";
-        this.mongoClient = new Mongo.MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+        this.mongoClient = new Mongo.MongoClient(uri, { });
         await this.mongoClient.connect();
         this.dbUsers = this.mongoClient.db(this.dbName).collection(this.dbUsersCollectionName);
         this.dbQuiz = this.mongoClient.db(this.dbName).collection(this.dbQuizCollectionName);

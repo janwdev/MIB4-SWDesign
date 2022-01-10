@@ -21,7 +21,7 @@ export class Statistics {
 
     private async saveStatistic(): Promise<void> {
         Control.user.statistics = this;
-        if(Control.user.registered){
+        if (Control.user.registered) {
             await database.saveStatistic(Control.user);
         }
     }
