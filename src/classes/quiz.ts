@@ -16,7 +16,7 @@ export class Quiz {
 
     public async createQuiz(): Promise<void> {
         this.questionsArray = [];
-        this.author = "Max"; //TODO change to username
+        this.author = "Max";
         this.quizTitle = "";
         await this.getBasicInfo();
         if (this.quizTitle == undefined) {
@@ -52,38 +52,39 @@ export class Quiz {
         let correctAnswers: number = 0;
         let amountOfQuestions: number = this.questionsArray.length;
         for (let index: number = 0; index < amountOfQuestions; index++) {
-            let question: Question = await database.getQuestion(new Mongo.ObjectId(this.questionsArray[index]));
-            // console.log(question);
+            let question: Question | null = await database.getQuestion(new Mongo.ObjectId(this.questionsArray[index]));
             let prompt;
             let correctAnswer;
             let message;
-            switch (question.type) {
-                case Question.UniqueNumberType:
-                    question = <UniqueNumber>question;
-                    message = question.question;
-                    correctAnswer = question.correctNumber;
-                    break;
-                case Question.QuestionOptionsType:
-                    question = <QuestionOptions>question;
-                    message = question.question
-                    for (let i = 1; i <= question.options.length; i++) {
-                        message += "\n" + i + ") " + question.options[i - 1];
+            if(question != null) {
+                switch (question.type) {
+                    case Question.uniqueNumberType:
+                        let uniqueNumberQuestion: UniqueNumber = <UniqueNumber>question;
+                        message = uniqueNumberQuestion.question;
+                        correctAnswer = uniqueNumberQuestion.correctNumber;
+                        break;
+                    case Question.questionOptionsType:
+                        let uniqueOptionsQuestion: QuestionOptions = <QuestionOptions>question;
+                        message = uniqueOptionsQuestion.question
+                        for (let i = 1; i <= uniqueOptionsQuestion.options.length; i++) {
+                            message += "\n" + i + ") " + uniqueOptionsQuestion.options[i - 1];
 
-                    }
+                        }
 
-                    correctAnswer = question.correctAnswer;
-                    break;
+                        correctAnswer = uniqueOptionsQuestion.correctAnswer;
+                        break;
 
-                case Question.UniqueTextType:
-                    question = <UniqueText>question;
-                    message = question.question;
-                    correctAnswer = question.rightAnswer;
-                    break;
+                    case Question.uniqueTextType:
+                        let uniqueTextQuestion: UniqueText = <UniqueText>question;
+                        message = uniqueTextQuestion.question;
+                        correctAnswer = uniqueTextQuestion.rightAnswer;
+                        break;
 
-                default:
-                    throw new Error("Error. Unknown question type");
+                    default:
+                        throw new Error("Error. Unknown question type");
 
-                    break;
+                        break;
+                }
             }
 
             prompt = [
@@ -108,14 +109,9 @@ export class Quiz {
                 console.log("Correct answer: " + correctAnswer);
             }
             console.log("Stats: " + correctAnswers + " of " + amountOfQuestions + " Questions correctly answered");
-            // console.log("Input: " + response)
-            // console.log("Answer: " + String(correctAnswer))
-
         }
         console.log("----Quiz-end----");
         await Control.user.statistics.setValues(amountOfQuestions, correctAnswers);
-
-        //TODO Daten aus console.log abspeichern  
     }
     private async getBasicInfo(): Promise<void> {
         const question = [
@@ -129,7 +125,7 @@ export class Quiz {
         this.quizTitle = response.title;
     }
 
-    private async quizVisibility(): Promise<boolean> {
+    private async quizVisibility(): Promise<boolean> {
         const response = await prompts({
             type: "select",
             name: "quizVisibility",
@@ -216,7 +212,7 @@ export class Quiz {
         ];
         const response = await prompts(questions);
         if (Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
-            await this.createQuestion(Question.UniqueNumberType, response.question, response.correctNumber, [], "");
+            await this.createQuestion(Question.uniqueNumberType, response.question, response.correctNumber, [], "");
             return true
         } else {
             return false
@@ -248,7 +244,7 @@ export class Quiz {
                 const optionsNumber = result.pop();
                 const correctNumber = (typeof optionsNumber == "string") ? parseInt(optionsNumber) : 1;
                 const options: string[] = result;
-                await this.createQuestion(Question.QuestionOptionsType, response.question, correctNumber, options, "");
+                await this.createQuestion(Question.questionOptionsType, response.question, correctNumber, options, "");
                 return true;
             } else return false;
         } else return false;
@@ -294,7 +290,7 @@ export class Quiz {
         ];
         const response = await prompts(questions);
         if (Object.values(response).length == 2 && !Object.values(response).includes(undefined)) {
-            await this.createQuestion(Question.UniqueTextType, response.question, 0, [], response.correctAnswer);
+            await this.createQuestion(Question.uniqueTextType, response.question, 0, [], response.correctAnswer);
             return true
         } else {
             return false
@@ -304,11 +300,11 @@ export class Quiz {
 
     private async createQuestion(questionType: number, questionString: string, correctNumber: number, options: string[], correctText: string): Promise<void> {
         let question!: Question;
-        if (questionType == Question.UniqueNumberType) {
+        if (questionType == Question.uniqueNumberType) {
             question = new UniqueNumber(questionString, correctNumber);
-        } else if (questionType == Question.QuestionOptionsType) {
+        } else if (questionType == Question.questionOptionsType) {
             question = new QuestionOptions(questionString, correctNumber, options);
-        } else if (questionType == Question.UniqueTextType) {
+        } else if (questionType == Question.uniqueTextType) {
             question = new UniqueText(questionString, correctText);
         }
         await database.addQuestionToDB(question);

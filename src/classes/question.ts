@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 export class Question {
-    public static readonly UniqueNumberType: number = 0;
-    public static readonly QuestionOptionsType: number = 1;
-    public static readonly UniqueTextType: number = 2;
-
+    public static readonly uniqueNumberType: number = 0;
+    public static readonly questionOptionsType: number = 1;
+    public static readonly uniqueTextType: number = 2;
+    
     public question: String;
     public type: number;
     public _id!: ObjectId;
