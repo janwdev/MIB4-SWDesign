@@ -15,7 +15,7 @@ export class Control {
         await database.connectRegistered();
         Control.user = new User(true, "user1", "1234");
         await database.register(Control.user);
-        let userDB: User | null = await database.login(Control.user.username, Control.user.password);
+        let userDB: User | null = await database.login(Control.user.username, Control.user.password ?? '');
         if (userDB) {
             Control.user.setValuesFromUser(userDB);
             console.log(Control.user._id?.toString());
