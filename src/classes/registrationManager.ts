@@ -1,4 +1,3 @@
-import { updateCall } from "typescript";
 import { User } from "./user";
 
 export class RegistrationManager {
