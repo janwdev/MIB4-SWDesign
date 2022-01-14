@@ -23,6 +23,7 @@
   "dependencies": {
     "@types/mongoose": "^5.11.97",
     "@types/node": "^16.11.7",
+    "@types/prompts": "^2.0.14",
     "bcrypt": "^5.0.1",
     "mongodb": "^4.3.0",
     "prompts": "^2.4.2",

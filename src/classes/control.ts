@@ -1,7 +1,11 @@
 import { Database } from "./database";
 import { Quiz } from "./quiz";
 import { User } from "./user";
-const prompts = require("prompts");
+import { QuizSelector } from "./quizSelector";
+import { QuizSelectorFactory } from "./quizSelectorFactory";
+import prompts from "prompts";
+
+
 
 export let database: Database = new Database();
 
@@ -15,7 +19,7 @@ export class Control {
         await database.connectRegistered();
         Control.user = new User(true, "user1", "1234");
         await database.register(Control.user);
-        let userDB: User | null = await database.login(Control.user.username, Control.user.password ?? '');
+        let userDB: User | null = await database.login(Control.user.username, String(Control.user.password));
         if (userDB) {
             Control.user.setValuesFromUser(userDB);
             console.log(Control.user._id?.toString());
@@ -26,7 +30,7 @@ export class Control {
 
         while (true) {
 
-            const response = await prompts({
+            const response: prompts.Answers<string> = await prompts.prompt({
                 type: "select",
                 name: "answer",
                 message: "Was willst du machen",
@@ -35,11 +39,11 @@ export class Control {
                     { title: "Quiz erstellen", value: 1 },
                     { title: "Statistik ansehen", value: 2 },
                     { title: "Quiz App beenden", value: 3 }
-                ],
+                ]
             });
 
             if (response.answer == 0) {
-                const prompt = [
+                const prompt: prompts.PromptObject[] = [
                     {
                         type: "text",
                         name: "answer",
@@ -52,17 +56,17 @@ export class Control {
                         const quiz: Quiz = all[index];
                         console.log((index + 1) + ") " + quiz.quizTitle);
                     }
-                    const response2 = await prompts(prompt);
+                    const response2: prompts.Answers<string> = await prompts(prompt);
 
                     const quizSelector: QuizSelector = await QuizSelectorFactory.checkQuiz(response2.answer);
                     
-                    if(!quizSelector.isNil()) {
-                        let selectedQuiz: Quiz | null = await quizSelector.getQuiz()
+                    if (!quizSelector.isNil()) {
+                        let selectedQuiz: Quiz | null = await quizSelector.getQuiz();
                         if (selectedQuiz) {
                             let quizClass: Quiz = new Quiz();
                             await quizClass.playQuiz(selectedQuiz);
                         }
-                    } else console.log("This quiz does not exist")
+                    } else console.log("This quiz does not exist");
                 }
 
             }
@@ -74,7 +78,7 @@ export class Control {
                 console.log(Control.user.showStatistic());
             } 
             else if (response.answer == 3) {
-                console.log("Quiz wird beendet")
+                console.log("Quiz wird beendet");
                 break;
             } 
             else {
@@ -87,52 +91,11 @@ export class Control {
 }
 
 
-abstract class QuizSelector {
-    protected quizNumber:string;
-    constructor() { this.quizNumber = "" }
-    public abstract isNil():boolean;
-    public abstract getQuiz(): Promise<Quiz>;
-}
-
-class RealQuiz extends QuizSelector {
-    constructor() {
-        super()
-        this.quizNumber = "-1"
-    }
-    setName(quizNumber:string) {
-       this.quizNumber = quizNumber;
-    }
-    public isNil():boolean {
-       return false;
-    }
-    public async getQuiz(): Promise<Quiz> {
-       let all: Quiz[] | null = await database.getAllQuiz();
-       return all!= null ? all[parseInt(this.quizNumber)-1] : new Quiz();
-    }
- }
-
-class NullQuiz extends QuizSelector {
-    constructor() {
-        super()
-        this.quizNumber = "-1"
-    }
-    public isNil():boolean {
-        return true;
-    }
-    public async getQuiz(): Promise<Quiz> {
-        return new Quiz();
-    }
-}
 
 
-class QuizSelectorFactory {
-    public static async checkQuiz(quizNumber:string): Promise<QuizSelector>{
-        let all: Quiz[] | null = await database.getAllQuiz();
-        if(all != null && parseInt(quizNumber) < all.length && parseInt(quizNumber) >= 0) {
-            let success:RealQuiz = new RealQuiz();
-            success.setName(quizNumber)
-            return success
-        }
-        return new NullQuiz()
-    }
- }
+
+
+
+
+
+
