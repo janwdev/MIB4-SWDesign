@@ -104,3 +104,7 @@ dist
 .tern-port
 
 package-lock.json
+
+src/test/registrationManager.test.js
+
+src/test/registrationManager.test.js.map
