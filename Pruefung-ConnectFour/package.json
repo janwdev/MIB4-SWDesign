@@ -1,0 +1,39 @@
+{
+  "name": "connect_four_sw_design",
+  "version": "1.0.0",
+  "description": "A Connect Four App",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "watch": "ts-node-dev --respawn --transpile-only ./src/index.ts",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janwdev/MIB4-SWDesign.git"
+  },
+  "author": "Jannik Weisser",
+  "license": "EUPL-1.2",
+  "bugs": {
+    "url": "https://github.com/janwdev/MIB4-SWDesign/issues"
+  },
+  "homepage": "https://github.com/janwdev/MIB4-SWDesign#readme",
+  "dependencies": {
+    "typescript": "^4.5.2",
+    "mongodb": "^4.3.0",
+    "bcrypt": "^5.0.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.8",
+    "jest": "^27.4.7",
+    "ts-jest": "^27.1.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/jest": "^27.4.0",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^16.11.7",
+    "@types/prompts": "^2.0.14"
+  }
+}

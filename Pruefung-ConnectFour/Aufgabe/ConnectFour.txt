@@ -1,0 +1,51 @@
+Mit der Rolle des Benutzers und registrtierten Benutzers sind sowohl männliche, weibliche als auch diverse Personen gemeint.
+
+Aufgabe ConnectARow App oder auch Vier gewinnt, nur anders:
+https://de.wikipedia.org/wiki/Vier_gewinnt
+
+Für den täglichen Zeitvertreib soll es eine Spiele App geben.
+
+In der Applikation gibt es zwei Rollen, den Benutzer und den Registrierten Benutzer.
+
+Bei Starten der Applikation gibt es drei Möglichkeiten:
+
+1. Der aktuelle Benutzer, kann ein Spiel starten.
+2. Der aktuelle Benutzer, kann sich Registrieren wenn er noch nicht registriert ist.
+3. Der aktuelle Benutzer, kann sich Anmelden mit Benutzername und Passwort.
+
+1. Spiel starten:
+  Für das Spiel gibt es immer nur zwei Spieler, das kann entsprechend farblich dargestellt werden oder mit "X" und "O"
+  1.1.  Hierbei soll es die Möglichkeit geben, gegen den Computer zu spielen. (Muss nicht sonderlich intelligent sein)
+  1.2.  Oder die Möglichkeit gegen jemand anderen bzw. sich selbst spielen zu können.
+  1.3.  Beim Starten des Spiels legt der Benutzer fest, welche Größe das Spielfeld auf den Koordinaten x und y hat und wie viele Punkte in einer Reihe zum Sieg reichen.
+    1.3.1.  Beispiel:
+      X: 10
+      Y: 7
+      Punkte in einer Reihe: 5
+      So ist das Spielfeld 10 mal 7 Felder groß, also 70 Einzelzellen, und 5 Punkte müssen in einer Reihe nebeneinander, übereinander oder diagonal zueinander verbunden sein um zu gewinnen.
+      Bei der Darstellung des Spielfeldes bin ich gespannt auf eure kreativen Einfälle.
+  1.4.  Bei der Wahl wie ein Punkt auf das Spielfeld gesetzt wird habt ihr freie Wahl, ihr könnt entweder den Punkt eines Spielers direkt aus ein bestimmtes Feld setzen 
+        oder einfach eine Reihe auswählen, wo der Punkt des jeweiligen Spielers einfach an der untersten Stelle der Reihe gesetzt wird.
+    Beispiele dafür:
+      Version 1: https://de.wikipedia.org/wiki/Tic-Tac-Toe
+      Version 2: https://de.wikipedia.org/wiki/Vier_gewinnt bzw. mehr gewinnt
+  1.5.  Es soll verhindert werden kleinere Spielfelder als 3 auf 3 zu starten.
+    Beispiel: 1 x 1, 1 x 2, 2 x 1, 2 x 2, 3 x 2 und 2 x 3 sind unzulässige Spielfelder
+  1.6.  Ebenso soll verhindert werden dass das Spielfeld kleiner ist auf einer Koordinate als die Anzahl Punkte, welche zum Sieg notwendig sind.
+    Beispiel: Spielfeldgröße 3 x 3, Anzahl Punkte zum Sieg 4
+
+  Hinweis:  Die Schwierigkeit beim Design des Spiels ist es festzustellen, wie die einzelnen Punkte zueinander verknüpft sind.
+            Hierbei müsst ihr euch die Frage stellen, welcher Bestandteil der Software weiß über andere Bestandteile Bescheid.
+  Tipp:     Den Gegenspieler als Computer könnt ihr rudimentär programmieren, bspw. mit einer zufälligen Auswahl des entsprechenden Feldes, dafür muss bekannt sein, ob eine Reihe voll ist oder 
+            ob ein bestimmtes Feld schon belegt ist.
+
+2. Benutzerregistrierung:
+Bei der Registrierung ist es erforderlich einen Benutzernamen (alphanumerisch, keine Sonderzeichen) und ein Passwort anzugeben.
+Registrierte Benutzer werden dann gespeichert.
+Ein bereits registrtierter Benutzername kann sich nicht nochmals Registrieren.
+
+Mit dem Benutzernamen und Passwort kann sich ein registrierter Benutzer anmelden.
+Entsprechende Sicherheitsvorkehrungen, dass das Passwort nicht sichtbar ist, usw... sind erwünscht, bspw. durch Hashes oder Sternchen ****, aber nicht erforderlich.
+
+Der Vorteil des registrierten Benutzers ist, dass dieser eine Statistik einsehen sehen kann, wie viele Spiele er gespielt hat, 
+wie viele gewonnen und verloren wurden, jeweils in absoluten Zahlen und in Prozent.
