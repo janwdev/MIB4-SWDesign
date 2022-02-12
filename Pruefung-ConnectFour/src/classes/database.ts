@@ -3,6 +3,7 @@ import * as bcrypt from "bcrypt";
 import { User } from "./user";
 
 export default class Database {
+    // Database Object needed for Singleton
     private static database: Database = new Database();
 
     private readonly dbName: string = "ConnectFour";
@@ -12,16 +13,28 @@ export default class Database {
 
     private readonly dbUsersCollectionName: string = "Users";
 
+
+    /**
+     * Force to use singleton
+     */
     constructor() {
         if (Database.database)
             throw new Error("Please use getInstance()");
         Database.database = this;
     }
 
+    /**
+     * Returns Instance of Database
+     * @returns Instance of Database
+     */
     public static getInstance(): Database {
         return Database.database;
     }
 
+    /**
+     * Connects to Database
+     * @returns true if connection was successfull
+     */
     public async connect(): Promise<boolean> {
         if (this.dbUsers == undefined) {
             if (process.env.dbUserName && process.env.dbUserPW) {
@@ -39,6 +52,9 @@ export default class Database {
         return this.dbUsers != undefined;
     }
 
+    /**
+     * Disconnect from Database
+     */
     public async disconnect(): Promise<void> {
         if (this.mongoClient) {
             await this.mongoClient.close();
@@ -46,13 +62,24 @@ export default class Database {
         }
     }
 
+    /**
+     * Adds user in Database
+     * @param user User to add in DB
+     */
     public async addUserToDB(user: User): Promise<void> {
         await this.dbUsers.insertOne(user);
     }
 
+    /**
+     * Login
+     * @param userName username to login
+     * @param password pasword to login
+     * @returns user if login was successfull
+     */
     public async login(userName: String, password: String): Promise<User | null> {
         let dbUser: User | null = await this.findUserByUsername(userName);
         if (dbUser) {
+            // Compare hashed Passwords
             if (await bcrypt.compare(<string>password, <string>dbUser.password)) {
                 return dbUser;
             } else {
@@ -62,9 +89,15 @@ export default class Database {
         return null;
     }
 
+    /**
+     * register
+     * @param userOld user, which wants to register
+     * @returns new user after register
+     */
     public async register(userOld: User): Promise<User | null> {
         let dbUser: User | null = await this.findUserByUsername(userOld.username);
         if (!dbUser) {
+            // password hash
             const saltRounds: number = 10;
             const hashedPassword: string = await bcrypt.hash(<string>userOld.password, saltRounds);
             let user: User = new User(userOld.registered, userOld.username, hashedPassword);
@@ -83,6 +116,10 @@ export default class Database {
         }
     }
 
+    /**
+     * Save statistics from user
+     * @param user user from which statistics should be saved
+     */
     public async saveStatistic(user: User): Promise<void> {
         const updateDoc: Mongo.UpdateFilter<Mongo.Document> = {
             $set: {
@@ -92,6 +129,11 @@ export default class Database {
         await this.dbUsers.updateOne({ _id: user._id }, updateDoc);
     }
 
+    /**
+     * Finds user by username
+     * @param username username to find
+     * @returns User if user with username exists
+     */
     private async findUserByUsername(username: String): Promise<User | null> {
         let user: User = <User>await this.dbUsers.findOne({ username: username });
         if (user) {

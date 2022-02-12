@@ -4,17 +4,25 @@ export class Computer {
 
     //TODO evtl wenn punkte +1 kleiner winningpoints && beide nächsten felder in reihe frei random 0 oder 1 zum aufaddieren (Lücke lassen)
 
+    /**Where was computers last set */
     private computerLastSet: number[] = [-1, -1];
+    /** Directions where most connected Key */
     private CMCROW: number = 0;
     private CMCCOLUMN: number = 1;
     private CMCLDRT: number = 2;
     private CMCLTRD: number = 3;
 
+    /** Direction where most connected */
     private direction: number = -1;
 
+    /**
+     * Computer set automatic at field in game mode tictactoe
+     */
     public setComputerTictactoe(): void {
         this.searchForPositionWithMostConnectedComputerTTT();
         if (this.computerLastSet[0] < 0 || this.computerLastSet[1] < 0) {
+            // if Computer havent set already or in direction are not enought free fields
+            // set random on free field
             let freeField: boolean = false;
             while (!freeField) {
                 this.computerLastSet[0] = control.getRandomInt(0, control.sizeX);
@@ -25,6 +33,7 @@ export class Computer {
                 }
             }
         } else {
+            // set on free field in right direction near field where most connected
             let lastX: number = this.computerLastSet[0];
             let lastY: number = this.computerLastSet[1];
             let alreadySet: boolean = false;
@@ -203,6 +212,9 @@ export class Computer {
         }
     }
 
+    /**
+     * Search for Position in game board where the computer has most connected fields and enough free fields to win
+     */
     public searchForPositionWithMostConnectedComputerTTT(): void {
         let countMostConnected: number = -1;
         for (let y: number = 0; y < control.sizeY; y++) {
@@ -252,29 +264,34 @@ export class Computer {
             this.computerLastSet[1] = -1;
             console.log("Cant find most connected");
         }
-        console.log("XComputerMostConnected: " + this.computerLastSet[0]);
-        console.log("YComputerMostConnected: " + this.computerLastSet[1]);
-        switch (this.direction) {
-            case this.CMCROW:
-                console.log("Mode Row");
-                break;
-            case this.CMCCOLUMN:
-                console.log("Mode Column");
-                break;
-            case this.CMCLDRT:
-                console.log("Mode LDRT");
-                break;
-            case this.CMCLTRD:
-                console.log("Mode LTRD");
-                break;
-            default:
-                break;
-        }
+        // console.log("XComputerMostConnected: " + this.computerLastSet[0]);
+        // console.log("YComputerMostConnected: " + this.computerLastSet[1]);
+        // switch (this.direction) {
+        //     case this.CMCROW:
+        //         console.log("Mode Row");
+        //         break;
+        //     case this.CMCCOLUMN:
+        //         console.log("Mode Column");
+        //         break;
+        //     case this.CMCLDRT:
+        //         console.log("Mode LDRT");
+        //         break;
+        //     case this.CMCLTRD:
+        //         console.log("Mode LTRD");
+        //         break;
+        //     default:
+        //         break;
+        // }
 
     }
 
+    /**
+     * Computer set automatic at field in game mode connectfour
+     */
     public setComputerInputConnectFour(): void {
         if (this.computerLastSet[0] < 0 || this.computerLastSet[1] < 0) {
+            // if Computer havent set already or in direction are not enought free fields
+            // set random on free field
             let freeField: boolean = false;
             while (!freeField) {
                 this.computerLastSet[0] = control.getRandomInt(0, control.sizeX);
@@ -287,6 +304,7 @@ export class Computer {
                 }
             }
         } else {
+            // set on free field in right direction near field where most connected if possible
             let countMostConnected: number = -1;
             let direction: number = -1;
             let mostX: number = -1;
@@ -344,8 +362,8 @@ export class Computer {
             if (mostX >= 0 && mostY >= 0) {
                 control.lastFieldSetXY[0] = mostX;
                 control.lastFieldSetXY[1] = mostY;
-                console.log("X:" + mostX);
-                console.log("Y:" + mostY);
+                // console.log("X:" + mostX);
+                // console.log("Y:" + mostY);
                 control.playArray[mostY][mostX] = control.FIELDUSER2;
             } else {
                 return this.setComputerInputConnectFour();
@@ -353,6 +371,13 @@ export class Computer {
         }
     }
 
+    /**
+     * Checks if there are enough free fields in given direction
+     * @param x X-Position
+     * @param y Y-Position
+     * @param mode Mode where to search (Row, comlumn, ...)
+     * @returns true if enough free fields in given direction
+     */
     private enoughFreeFieldsAtPoint(x: number, y: number, mode: number): boolean {
         let freeFields: number = 1;
         switch (mode) {
@@ -469,6 +494,11 @@ export class Computer {
         return false;
     }
 
+    /**
+     * Search for Y Position where you can set for given X-Direction in connectfour mode
+     * @param x X-Position
+     * @returns Y-Position where you can set
+     */
     private highestYPosinColumn(x: number): number {
         let returnval: number = control.sizeY - 1;
         for (let i: number = 0; i < control.sizeY; i++) {

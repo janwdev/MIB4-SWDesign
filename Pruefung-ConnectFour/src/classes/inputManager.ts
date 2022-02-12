@@ -5,6 +5,9 @@ import { User } from "./user";
 
 export class InputManager {
 
+    /**
+     * Asks and sets value for game mode
+     */
     public async getGameMode(): Promise<void> {
         let proceed: boolean = false;
         while (!proceed) {
@@ -38,6 +41,9 @@ export class InputManager {
         }
     }
 
+    /**
+     * Asks how to play (against computer or other human)
+     */
     public async playAgainstWho(): Promise<void> {
         let proceed: boolean = false;
         while (!proceed) {
@@ -71,6 +77,11 @@ export class InputManager {
         }
     }
 
+    /**
+     * Question if you want to login, register or play anonymous
+     * @param message Question to display
+     * @returns User if all went right
+     */
     public async howToPlay(message: string): Promise<User | undefined> {
         let proceed: boolean = false;
         while (!proceed) {
@@ -130,9 +141,11 @@ export class InputManager {
         }
     }
 
+    /**
+     * Asks question to create Playground (Size and how many winning points)
+     */
     public async createPlayground(): Promise<void> {
         let proceed: boolean = false;
-
         while (!proceed) {
             let response: prompts.Answers<string> = await prompts.prompt({
                 type: "number",
@@ -178,6 +191,7 @@ export class InputManager {
                 console.log("Winning points must be smaller than shortest side of board and minimum 2!\nPlease try again");
             }
         }
+        //initialise Playarray with all fields empty
         for (let y: number = 0; y < control.sizeY; y++) {
             control.playArray[y] = [];
             for (let x: number = 0; x < control.sizeX; x++) {
@@ -186,6 +200,9 @@ export class InputManager {
         }
     }
 
+    /**
+     * Asks user where to set and sets in ConnectFour
+     */
     public async waitAndSetUserInputConnectFour(): Promise<void> {
         console.log("Possible from (X:1) (left) until (X:" + control.sizeX + " (right)");
         let proceed: boolean = false;
@@ -204,6 +221,7 @@ export class InputManager {
             }
             if (x <= control.sizeX && x > 0) {
                 x--;
+                // Sets Field for user when empty
                 for (let y: number = control.sizeY - 1; y >= 0; y--) {
                     if (control.playArray[y][x] == control.FIELDEMPTY) {
                         control.lastFieldSetXY = [x, y];
@@ -227,6 +245,9 @@ export class InputManager {
         }
     }
 
+    /**
+     * Asks user where to set and sets in TicTacToe
+     */
     public async waitAndSetUserInputTictactoe(): Promise<void> {
         console.log("Possible from(1,1) (top left) until (X:" + control.sizeX + ",Y:" + control.sizeY + ") (bottom right)");
         let proceed: boolean = false;
@@ -252,6 +273,7 @@ export class InputManager {
                 await control.exitProgram();
             }
 
+            // Sets for user if empty
             if (x <= control.sizeX && y <= control.sizeY && x > 0 && y > 0) {
                 x--;
                 y--;

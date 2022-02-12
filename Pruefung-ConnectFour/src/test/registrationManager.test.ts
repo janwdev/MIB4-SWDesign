@@ -1,6 +1,9 @@
 import { RegistrationManagerImp } from "../classes/RegistrationManagerImp";
 
+// Units-Tests for password security
+
 let regManager: RegistrationManagerImp = new RegistrationManagerImp();
+
 test("test password 12345 to be false", () => {
   expect(regManager.testPasswordSecurity("12345")).toBe(false);
 });
