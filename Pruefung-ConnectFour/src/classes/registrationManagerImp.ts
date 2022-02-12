@@ -1,7 +1,7 @@
 import { User } from "./user";
 import { database } from "./control";
 import prompts from "prompts";
-import { RegistrationManager } from "./registrationManager";
+import { RegistrationManager, testPasswordSecurity } from "./registrationManager";
 
 /**
  * Implemention of Registration Manager
@@ -101,10 +101,7 @@ export class RegistrationManagerImp implements RegistrationManager {
      * @returns true if password is secure enough
      */
     public testPasswordSecurity(password: string): boolean {
-        if (password)
-            //Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
-            return password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/) != null;
-        return false;
+        return testPasswordSecurity(password);
     }
 
     /**

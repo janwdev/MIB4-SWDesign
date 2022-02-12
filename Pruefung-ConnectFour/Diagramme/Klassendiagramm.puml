@@ -1,0 +1,109 @@
+@startuml
+class Statistics {
+    +gamesPlayed: number
+    +gamesWon: number
+    +gamesLost: number
+    +setValues(won: boolean, lost: boolean): Promise<void>
+    +initSetValues(gamesPlayed: number, gamesWon: number, gamesLost: number): void
+    -saveStatistic(): Promise<void>
+}
+class User {
+    +_id?: ObjectId | undefined
+    +registered: Boolean
+    +username: String
+    +statistics: Statistics
+    +password?: String | undefined
+    +setValuesFromUser(userDB: User): void
+    +returnStatistic(): string
+}
+class default {
+    -dbName: string
+    -mongoClient: Mongo.MongoClient
+    -dbUsers: Mongo.Collection<Mongo.Document>
+    -dbUsersCollectionName: string
+    +connect(): Promise<boolean>
+    +disconnect(): Promise<void>
+    +addUserToDB(user: User): Promise<void>
+    +login(userName: String, password: String): Promise<User | null>
+    +register(userOld: User): Promise<User | null>
+    +saveStatistic(user: User): Promise<void>
+    -findUserByUsername(username: String): Promise<User | null>
+    -{static} database: Database
+    +{static} getInstance(): Database
+}
+interface RegistrationManager {
+    +register(): Promise<User | null>
+    +login(): Promise<User | null>
+    +registerAnonymousUser(): User
+    +registerComputerUser(): User
+}
+class RegistrationManagerImp implements RegistrationManager {
+    +registerAnonymousUser(): User
+    +registerComputerUser(): User
+    +register(): Promise<User | null>
+    +login(): Promise<User | null>
+    +testPasswordSecurity(password: string): boolean
+    -checkUsername(username: String): boolean
+    -getUserName(): Promise<string | null>
+    -getPassword(): Promise<string | null>
+}
+class InputManager {
+    +getGameMode(): Promise<void>
+    +playAgainstWho(): Promise<void>
+    +howToPlay(message: string): Promise<User | undefined>
+    +createPlayground(): Promise<void>
+    +waitAndSetUserInputConnectFour(): Promise<void>
+    +waitAndSetUserInputTictactoe(): Promise<void>
+}
+class Control {
+    +playAgainstComputer: boolean
+    +sizeX: number
+    +sizeY: number
+    +winningPointsInRow: number
+    +playArray: number[][]
+    +FIELDEMPTY: number
+    +FIELDUSER1: number
+    +FIELDUSER2: number
+    +lastFieldSetXY: [number, number]
+    +isUser1Playing: boolean
+    +gameMode?: number | undefined
+    +GAMEMODETICTACTOE: number
+    +GAMEMODECONNECTFOUR: number
+    +regManager: RegistrationManager
+    -computer: Computer
+    -inputManager: InputManager
+    -DRAWFIELDEMPTY: string
+    -DRAWFIELDUSER1: string
+    -DRAWFIELDUSER2: string
+    -gameOver: boolean
+    +main(): Promise<void>
+    +checkDiagonalLTRD(lastX: number, lastY: number): number
+    +checkDiagonalLDRT(lastX: number, lastY: number): number
+    +checkDiagonal(lastX: number, lastY: number): number
+    +checkColumns(lastX: number, lastY: number): number
+    +checkRows(lastX: number, lastY: number): number
+    +getRandomInt(min: number, max: number): number
+    +exitProgram(): Promise<void>
+    -checkIfGameOver(): Promise<boolean>
+    -checkIfGameWon(): Promise<boolean>
+    -checkIfGameDrawn(): Promise<boolean>
+    -drawPlayground(): void
+    -waitAndSetUserInput(): Promise<void>
+    -chunkArray(arr: string[], n: number): string[][]
+    +{static} user: User
+    +{static} user2: User
+}
+class Computer {
+    -computerLastSet: number[]
+    -CMCROW: number
+    -CMCCOLUMN: number
+    -CMCLDRT: number
+    -CMCLTRD: number
+    -direction: number
+    +setComputerTictactoe(): void
+    +searchForPositionWithMostConnectedComputerTTT(): void
+    +setComputerInputConnectFour(): void
+    -enoughFreeFieldsAtPoint(x: number, y: number, mode: number): boolean
+    -highestYPosinColumn(x: number): number
+}
+@enduml
