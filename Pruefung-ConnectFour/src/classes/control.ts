@@ -258,7 +258,6 @@ export class Control {
             // Output and if registered, save new statistic
             if (!this.isUser1Playing) {
                 username = Control.user2.username;
-                console.log("Congratulations, " + username + ", you have won the game");
                 if (Control.user2.registered)
                     await Control.user2.statistics.setValues(true, false);
                 if (Control.user.registered)
@@ -269,6 +268,7 @@ export class Control {
                 if (Control.user.registered)
                     await Control.user.statistics.setValues(true, false);
             }
+            console.log("Congratulations, " + username + ", you have won the game");
             if (Control.user.registered)
                 console.log(Control.user.returnStatistic());
             if (Control.user2.registered)
